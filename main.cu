@@ -7,8 +7,8 @@ __global__ void add(int *a, int *b, int *c){
     int y = blockIdx.y;
     int offset = x + y*N;
     
-    if(offset < N)
-        c[offset] = a[offset] + b[offset];
+    //if(offset < N)
+    c[offset] = a[offset] + b[offset];
     //if(tid < N)
     //    c[tid] = a[tid] + b[tid];
 }
