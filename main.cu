@@ -1,6 +1,6 @@
 #include "Utilidades/book.h"
 
-#define N 1000
+#define N 834
 
 __global__ void add(int *a, int *b, int *c){
     int x = blockIdx.x;
