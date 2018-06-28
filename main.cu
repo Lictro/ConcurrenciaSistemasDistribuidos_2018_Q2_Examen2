@@ -24,8 +24,8 @@ int main(){
     HANDLE_ERROR(cudaMalloc((void**)&dev_c, matriz_leng*sizeof(int)));
 
     for(int i = 0; i < matriz_leng; i++){
-        a[i] = i;
-        b[i] = i;
+        a[i] = 2;
+        b[i] = 2;
     }
 
     HANDLE_ERROR(cudaMemcpy(dev_a, a, matriz_leng*sizeof(int), cudaMemcpyHostToDevice));
@@ -35,11 +35,19 @@ int main(){
 
     HANDLE_ERROR(cudaMemcpy(c, dev_c, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
 
-    for(int i = 0; i < matriz_leng; i++){
-        printf("%d + %d = %d\n", a[i], b[i], c[i]);
-    }
-
     HANDLE_ERROR(cudaFree(dev_a));
     HANDLE_ERROR(cudaFree(dev_b));
     HANDLE_ERROR(cudaFree(dev_c));
+
+    for(int i = 0; i < matriz_leng; i++){
+        //printf("%d + %d = %d\n", a[i], b[i], c[i]);
+        if(c[i] != 3){
+            printf("FALLO EN LA POSICION: %d", i);
+            return 0;
+        }
+    }
+
+    printf("DONE!");
+
+    return 0;
 }
