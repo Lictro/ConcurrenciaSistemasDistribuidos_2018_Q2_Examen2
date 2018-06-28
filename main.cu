@@ -14,26 +14,28 @@ __global__ void add(int *a, int *b, int *c){
 }
 
 int main(){
-    int a[N*N], b[N*N], c[N*N];
+    int matriz_leng = N*N;
+
+    int a[matriz_leng], b[matriz_leng], c[matriz_leng];
     int *dev_a, *dev_b, *dev_c;
 
-    HANDLE_ERROR(cudaMalloc((void**)&dev_a, N*sizeof(int)));
-    HANDLE_ERROR(cudaMalloc((void**)&dev_b, N*sizeof(int)));
-    HANDLE_ERROR(cudaMalloc((void**)&dev_c, N*sizeof(int)));
+    HANDLE_ERROR(cudaMalloc((void**)&dev_a, matriz_leng*sizeof(int)));
+    HANDLE_ERROR(cudaMalloc((void**)&dev_b, matriz_leng*sizeof(int)));
+    HANDLE_ERROR(cudaMalloc((void**)&dev_c, matriz_leng*sizeof(int)));
 
-    for(int i = 0; i < N*N; i++){
+    for(int i = 0; i < matriz_leng; i++){
         a[i] = i;
         b[i] = i;
     }
 
-    HANDLE_ERROR(cudaMalloc(dev_a, a, N*sizeof(int), cudaMemcpyDeviceToHost));
-    HANDLE_ERROR(cudaMalloc(dev_b, b, N*sizeof(int), cudaMemcpyDeviceToHost));
+    HANDLE_ERROR(cudaMemcpy(dev_a, a, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
+    HANDLE_ERROR(cudaMemcpy(dev_b, b, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
 
-    add<<<N*N,1>>>(dev_a, dev_b, dev_c);
+    add<<<matriz_leng,1>>>(dev_a, dev_b, dev_c);
 
-    HANDLE_ERROR(cudaMalloc(dev_c, c, N*sizeof(int), cudaMemcpyDeviceToHost));
+    HANDLE_ERROR(cudaMemcpy(dev_c, c, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
 
-    for(int i = 0; i < N*N; i++){
+    for(int i = 0; i < matriz_leng; i++){
         printf("%d + %d = %d\n", a[i], b[i], c[i]);
     }
 
