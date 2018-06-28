@@ -1,2 +1,6 @@
 1. Diferencia entre Julia y Mandelbrot
-2. 
+2. Esta funcionando?
+
+
+Comandos:
+clear && /usr/local/cuda-9.2/bin/nvcc add_loop_books.cu -o suma -lglut -lGL && ./suma
