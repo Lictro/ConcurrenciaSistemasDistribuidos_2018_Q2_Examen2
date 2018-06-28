@@ -1,6 +1,6 @@
 #include "Utilidades/book.h"
 
-#define N 10
+#define N 1000
 
 __global__ void add(int *a, int *b, int *c){
     int x = blockIdx.x;
@@ -24,7 +24,7 @@ int main(){
     HANDLE_ERROR(cudaMalloc((void**)&dev_c, matriz_leng*sizeof(int)));
 
     for(int i = 0; i < matriz_leng; i++){
-        a[i] = 2;
+        a[i] = 1;
         b[i] = 2;
     }
 
@@ -42,12 +42,12 @@ int main(){
     for(int i = 0; i < matriz_leng; i++){
         //printf("%d + %d = %d\n", a[i], b[i], c[i]);
         if(c[i] != 3){
-            printf("FALLO EN LA POSICION: %d", i);
+            printf("FALLO EN LA POSICION: %d\n", i);
             return 0;
         }
     }
 
-    printf("DONE!");
+    printf("DONE!\n");
 
     return 0;
 }
