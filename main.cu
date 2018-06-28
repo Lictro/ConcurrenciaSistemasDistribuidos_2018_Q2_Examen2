@@ -28,12 +28,12 @@ int main(){
         b[i] = i;
     }
 
-    HANDLE_ERROR(cudaMemcpy(dev_a, a, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
-    HANDLE_ERROR(cudaMemcpy(dev_b, b, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
+    HANDLE_ERROR(cudaMemcpy(dev_a, a, matriz_leng*sizeof(int), cudaMemcpyHostToDevice));
+    HANDLE_ERROR(cudaMemcpy(dev_b, b, matriz_leng*sizeof(int), cudaMemcpyHostToDevice));
 
     add<<<matriz_leng,1>>>(dev_a, dev_b, dev_c);
 
-    HANDLE_ERROR(cudaMemcpy(dev_c, c, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
+    HANDLE_ERROR(cudaMemcpy(c, dev_c, matriz_leng*sizeof(int), cudaMemcpyDeviceToHost));
 
     for(int i = 0; i < matriz_leng; i++){
         printf("%d + %d = %d\n", a[i], b[i], c[i]);
