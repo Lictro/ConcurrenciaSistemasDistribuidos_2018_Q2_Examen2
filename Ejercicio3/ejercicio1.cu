@@ -74,14 +74,25 @@ int main(int argc, char *argv[])
 	//dim3 blocksPerGrid(???);
 	//dim3 threadsPerBlock(???);
 	//affine_decrypt_multiblock(???);
+	/* -------------------------------------------------------- */
 	//affine_decrypt<<<1,N>>>(d_input, d_output);
+	/* -------------------------------------------------------- */
+	// dim3 blocksPerGrid(1);
+	// dim3 threadsPerBlock(N);
+	// affine_decrypt<<<blocksPerGrid,threadsPerBlock>>>(d_input, d_output);
 	
 	/* Ejercicio 1.8.2: Configurar el grid y correr el kernel */
 	//dim3 blocksPerGrid(???);
 	//dim3 threadsPerBlock(???);
 	//affine_decrypt(???);
+	/* -------------------------------------------------------- */
 	const unsigned int BLOCK_COUNT = 8;
-	affine_decrypt_multiblock<<<BLOCK_COUNT,N/BLOCK_COUNT>>>(d_input, d_output);
+	/* -------------------------------------------------------- */
+	// affine_decrypt_multiblock<<<BLOCK_COUNT,N/BLOCK_COUNT>>>(d_input, d_output);
+	/* -------------------------------------------------------- */
+	dim3 blocksPerGrid(BLOCK_COUNT);
+	dim3 threadsPerBlock(N/BLOCK_COUNT);
+	affine_decrypt_multiblock<<<blocksPerGrid,threadsPerBlock>>>(d_input, d_output);
 	
 	/* Espera a que todos los hilos esten completos*/
 	cudaThreadSynchronize();
