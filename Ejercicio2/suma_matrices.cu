@@ -1,12 +1,12 @@
 #include "../Utilidades/book.h"
 
 // Definimos las dimensiones de la matriz
-#define N 1000
+#define N 500
 #define M N
 
 // Definimos type para poder probar con mayor cantidad de numeros o diferentes precisiones
 // En este caso queremos probar data mas massiva
-#define TYPE int
+#define TYPE char
 
 // Hacemos la suma de la matriz en el device
 __global__ void add(TYPE* a, TYPE* b, TYPE* c){
