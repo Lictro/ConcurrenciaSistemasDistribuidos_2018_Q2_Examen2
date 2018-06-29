@@ -2,16 +2,24 @@
 #include <stdlib.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+#include "../Utilidades/book.h"
 
 //El numero de caractares en el texto encriptado
 #define N 1024
+
+// Definimos A, Ai, B y M como recomendacion y para que quede mas legible
+#define A 15
+#define Ai 111
+#define B 27
+#define M 128
 
 void checkCUDAError(const char*);
 void read_encrypted_file(int*);
 
 
 /* Ejercicio 1.1 */
-int modulo(int a, int b){
+// Agregamos la frase __device__ para indicarle que se puede llamar desde GPU
+__device__ int modulo(int a, int b){
 	int r = a % b;
 	r = (r < 0) ? r + b : r;
 	return r;
@@ -20,11 +28,17 @@ int modulo(int a, int b){
 __global__ void affine_decrypt(int *d_input, int *d_output)
 {
 	/* Ejercicio 1.2 */
+	const unsigned int offset = threadIdx.x;
+	const int X = d_input[offset];
+	d_output[offset] = modulo(Ai * (X - B), M);
 }
 
 __global__ void affine_decrypt_multiblock(int *d_input, int *d_output)
 {
 	/* Ejercicio 1.8 */
+	const unsigned int offset = blockIdx.x * blockDim.x + threadIdx.x;
+	const int X = d_input[offset];
+	d_output[offset] = modulo(Ai * (X - B), M);
 }
 
 
@@ -44,6 +58,8 @@ int main(int argc, char *argv[])
 	/* Ejercicio 1.3: Alojar Memoria en el dispositivo */
 	//cudaMalloc(???);
 	//cudaMalloc(???);
+	HANDLE_ERROR(cudaMalloc((void**)&d_input, size));
+	HANDLE_ERROR(cudaMalloc((void**)&d_output, size));
 	checkCUDAError("Alojamiento de Memoria");
 
 	/* Lectura del texto encriptado */
@@ -51,19 +67,29 @@ int main(int argc, char *argv[])
 
 	/* Ejercicio 1.4: copiar las entradas del host al dispositivo */
 	//cudaMemcpy(???);
+	HANDLE_ERROR(cudaMemcpy(d_input, h_input, size, cudaMemcpyHostToDevice));
 	checkCUDAError("Transferencia de entradas al dispositivo");
-
+	
 	/* Ejercicio 1.5: Configurar el grid y correr el kernel */
 	//dim3 blocksPerGrid(???);
 	//dim3 threadsPerBlock(???);
+	//affine_decrypt_multiblock(???);
+	//affine_decrypt<<<1,N>>>(d_input, d_output);
+	
+	/* Ejercicio 1.8.2: Configurar el grid y correr el kernel */
+	//dim3 blocksPerGrid(???);
+	//dim3 threadsPerBlock(???);
 	//affine_decrypt(???);
-
+	const unsigned int BLOCK_COUNT = 8;
+	affine_decrypt_multiblock<<<BLOCK_COUNT,N/BLOCK_COUNT>>>(d_input, d_output);
+	
 	/* Espera a que todos los hilos esten completos*/
 	cudaThreadSynchronize();
 	checkCUDAError("Ejecucion del Kernel");
-
+	
 	/* Ejercicio 1.6: Copiar la salida de la GPU al host */
 	//cudaMemcpy(???);
+	HANDLE_ERROR(cudaMemcpy(h_output, d_output, size, cudaMemcpyDeviceToHost));
 	checkCUDAError("Transferencia de resultados al host");
 
 	/* Imprimir resultados */
@@ -75,6 +101,8 @@ int main(int argc, char *argv[])
 	/* Ejercicio 1.7: Liberacion de Memoria */
 	//cudaFree(???);
 	//cudaFree(???);
+	HANDLE_ERROR(cudaFree(d_input));
+	HANDLE_ERROR(cudaFree(d_output));
 	checkCUDAError("Liberacion de Memoria");
 
 	/* Limpiear buffer del host*/
